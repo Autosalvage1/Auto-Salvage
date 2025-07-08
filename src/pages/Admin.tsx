@@ -9,9 +9,9 @@ export default function Admin() {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3001/api/products")
+    fetch("https://auto-salvage.onrender.com/api/products")
       .then((res) => res.json())
-      .then((data) => setProducts(data));
+      .then((data) => setProducts(data.map(product => ({ ...product, price: parseFloat(product.price) }))));
   }, []);
 
   const handleDelete = (id) => {

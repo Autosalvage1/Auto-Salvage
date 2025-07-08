@@ -7,7 +7,22 @@ const { Pool } = require("pg");
 const app = express();
 const port = 3001;
 
-app.use(cors());
+const allowedOrigins = [
+  "https://auto-salvage.vercel.app",
+  "https://autosalvage.autos",
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+  })
+);
 app.use(express.json());
 
 const pool = new Pool({

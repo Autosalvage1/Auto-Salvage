@@ -19,7 +19,7 @@ const Index = () => {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      let url = "http://localhost:3001/api/products?";
+      let url = "https://auto-salvage.onrender.com/api/products?";
       if (searchQuery) url += `name=${searchQuery}&`;
       if (selectedCar && selectedCar !== "all") url += `car=${selectedCar}&`;
       if (selectedCondition && selectedCondition !== "all") url += `condition=${selectedCondition}&`;
@@ -28,7 +28,7 @@ const Index = () => {
 
       const res = await fetch(url);
       const data = await res.json();
-      setProducts(data);
+      setProducts(data.map(product => ({ ...product, price: parseFloat(product.price) })));
     };
     fetchProducts();
   }, [searchQuery, selectedCar, selectedCondition, selectedStockStatus, selectedPart]);

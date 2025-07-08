@@ -24,7 +24,7 @@ export default function AddProductDialog({ setProducts }) {
   const [part, setPart] = useState("");
 
   const handleSubmit = () => {
-    fetch("http://localhost:3001/api/products", {
+    fetch("https://auto-salvage.onrender.com/api/products", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

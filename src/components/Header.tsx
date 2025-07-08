@@ -28,16 +28,6 @@ export const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="sm" className="hidden md:flex">
-              <User className="h-4 w-4 mr-2" />
-              Account
-            </Button>
-            <Button variant="ghost" size="sm" className="relative">
-              <ShoppingCart className="h-4 w-4" />
-              <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                3
-              </span>
-            </Button>
             <Button variant="ghost" size="sm" className="md:hidden">
               <Menu className="h-4 w-4" />
             </Button>

@@ -1,21 +1,39 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { HeroSection } from "@/components/HeroSection";
 import { ProductCard } from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { sampleProducts } from "@/data/products";
-import { Filter, Grid, List } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Filter, Grid, List, Search } from "lucide-react";
 
 const Index = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [products, setProducts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCar, setSelectedCar] = useState("");
+  const [selectedCondition, setSelectedCondition] = useState("");
+  const [selectedStockStatus, setSelectedStockStatus] = useState("");
+  const [selectedPart, setSelectedPart] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  const categories = ["All", "Engine", "Brakes", "Lighting", "Transmission", "Body", "Exhaust", "Suspension", "Electronics", "Wheels"];
+  useEffect(() => {
+    const fetchProducts = async () => {
+      let url = "http://localhost:3001/api/products?";
+      if (searchQuery) url += `name=${searchQuery}&`;
+      if (selectedCar && selectedCar !== "all") url += `car=${selectedCar}&`;
+      if (selectedCondition && selectedCondition !== "all") url += `condition=${selectedCondition}&`;
+      if (selectedStockStatus && selectedStockStatus !== "all") url += `stock_status=${selectedStockStatus}&`;
+      if (selectedPart && selectedPart !== "all") url += `part=${selectedPart}&`;
 
-  const filteredProducts = selectedCategory === "All" 
-    ? sampleProducts 
-    : sampleProducts.filter(product => product.category === selectedCategory);
+      const res = await fetch(url);
+      const data = await res.json();
+      setProducts(data);
+    };
+    fetchProducts();
+  }, [searchQuery, selectedCar, selectedCondition, selectedStockStatus, selectedPart]);
+
+  const categories = ["All", "Engine", "Brakes", "Lighting", "Transmission", "Body", "Exhaust", "Suspension", "Electronics", "Wheels"];
 
   return (
     <div className="min-h-screen bg-background">
@@ -36,17 +54,57 @@ const Index = () => {
           {/* Filters and Controls */}
           <div className="flex flex-col lg:flex-row justify-between items-center mb-8 gap-4">
             <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <Button
-                  key={category}
-                  variant={selectedCategory === category ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedCategory(category)}
-                  className="transition-all duration-200"
-                >
-                  {category}
-                </Button>
-              ))}
+              <div className="relative w-full max-w-sm">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input 
+                  placeholder="Search products..." 
+                  className="pl-10 bg-muted/50"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <Select onValueChange={setSelectedCar} value={selectedCar}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select Car" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Cars</SelectItem>
+                  <SelectItem value="Toyota">Toyota</SelectItem>
+                  <SelectItem value="Honda">Honda</SelectItem>
+                  <SelectItem value="Ford">Ford</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select onValueChange={setSelectedCondition} value={selectedCondition}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select Condition" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Conditions</SelectItem>
+                  <SelectItem value="new">New</SelectItem>
+                  <SelectItem value="used">Used</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select onValueChange={setSelectedStockStatus} value={selectedStockStatus}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select Stock Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Stock Statuses</SelectItem>
+                  <SelectItem value="in_stock">In Stock</SelectItem>
+                  <SelectItem value="low_stock">Low in Stock</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select onValueChange={setSelectedPart} value={selectedPart}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select Part" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Parts</SelectItem>
+                  <SelectItem value="engine">Engine</SelectItem>
+                  <SelectItem value="brakes">Brakes</SelectItem>
+                  <SelectItem value="lighting">Lighting</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="flex items-center gap-4">
@@ -66,17 +124,13 @@ const Index = () => {
                   <List className="h-4 w-4" />
                 </Button>
               </div>
-              <Button variant="outline" size="sm">
-                <Filter className="h-4 w-4 mr-2" />
-                Filters
-              </Button>
             </div>
           </div>
 
           {/* Results Count */}
           <div className="mb-6">
             <Badge variant="secondary" className="text-sm">
-              {filteredProducts.length} parts found
+              {products.length} parts found
             </Badge>
           </div>
 
@@ -86,7 +140,7 @@ const Index = () => {
               ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
               : "grid-cols-1"
           }`}>
-            {filteredProducts.map((product) => (
+            {products.map((product) => (
               <ProductCard key={product.id} {...product} />
             ))}
           </div>
@@ -151,3 +205,4 @@ const Index = () => {
 };
 
 export default Index;
+

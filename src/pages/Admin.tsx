@@ -15,11 +15,40 @@ export default function Admin() {
     if (activeTab === "carParts") {
       fetch("https://auto-salvage.onrender.com/api/products")
         .then((res) => res.json())
-        .then((data) => setProducts(data.map(product => ({ ...product, price: parseFloat(product.price) }))));
+        .then((data) => {
+          if (Array.isArray(data)) {
+            setProducts(
+              data.map((product) => ({
+                ...product,
+                price: parseFloat(product.price),
+              }))
+            );
+          } else {
+            console.error("Error fetching products:", data);
+            setProducts([]);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching products:", error);
+          setProducts([]);
+        });
     } else {
       fetch("https://auto-salvage.onrender.com/api/used_cars")
         .then((res) => res.json())
-        .then((data) => setUsedCars(data.map(car => ({ ...car, price: parseFloat(car.price) }))));
+        .then((data) => {
+          if (Array.isArray(data)) {
+            setUsedCars(
+              data.map((car) => ({ ...car, price: parseFloat(car.price) }))
+            );
+          } else {
+            console.error("Error fetching used cars:", data);
+            setUsedCars([]);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching used cars:", error);
+          setUsedCars([]);
+        });
     }
   }, [activeTab]);
 

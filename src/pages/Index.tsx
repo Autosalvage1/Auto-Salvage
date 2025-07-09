@@ -22,24 +22,53 @@ const Index = () => {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      let url = "https://auto-salvage.onrender.com/api/products?";
-      if (searchQuery) url += `name=${searchQuery}&`;
-      if (selectedCar && selectedCar !== "all") url += `car=${selectedCar}&`;
-      if (selectedCondition && selectedCondition !== "all") url += `condition=${selectedCondition}&`;
-      if (selectedStockStatus && selectedStockStatus !== "all") url += `stock_status=${selectedStockStatus}&`;
-      if (selectedPart && selectedPart !== "all") url += `part=${selectedPart}&`;
+      try {
+        let url = "https://auto-salvage.onrender.com/api/products?";
+        if (searchQuery) url += `name=${searchQuery}&`;
+        if (selectedCar && selectedCar !== "all") url += `car=${selectedCar}&`;
+        if (selectedCondition && selectedCondition !== "all")
+          url += `condition=${selectedCondition}&`;
+        if (selectedStockStatus && selectedStockStatus !== "all")
+          url += `stock_status=${selectedStockStatus}&`;
+        if (selectedPart && selectedPart !== "all") url += `part=${selectedPart}&`;
 
-      const res = await fetch(url);
-      const data = await res.json();
-      setProducts(data.map(product => ({ ...product, price: parseFloat(product.price) })));
+        const res = await fetch(url);
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setProducts(
+            data.map((product) => ({
+              ...product,
+              price: parseFloat(product.price),
+            }))
+          );
+        } else {
+          console.error("Error fetching products:", data);
+          setProducts([]);
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        setProducts([]);
+      }
     };
 
     const fetchUsedCars = async () => {
-      let url = "https://auto-salvage.onrender.com/api/used_cars?";
-      // Add filters for used cars here
-      const res = await fetch(url);
-      const data = await res.json();
-      setUsedCars(data.map(car => ({ ...car, price: parseFloat(car.price) })));
+      try {
+        let url = "https://auto-salvage.onrender.com/api/used_cars?";
+        // Add filters for used cars here
+        const res = await fetch(url);
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setUsedCars(
+            data.map((car) => ({ ...car, price: parseFloat(car.price) }))
+          );
+        } else {
+          console.error("Error fetching used cars:", data);
+          setUsedCars([]);
+        }
+      } catch (error) {
+        console.error("Error fetching used cars:", error);
+        setUsedCars([]);
+      }
     };
 
     if (activeTab === "carParts") {
@@ -47,7 +76,14 @@ const Index = () => {
     } else {
       fetchUsedCars();
     }
-  }, [searchQuery, selectedCar, selectedCondition, selectedStockStatus, selectedPart, activeTab]);
+  }, [
+    searchQuery,
+    selectedCar,
+    selectedCondition,
+    selectedStockStatus,
+    selectedPart,
+    activeTab,
+  ]);
 
   const categories = ["All", "Engine", "Brakes", "Lighting", "Transmission", "Body", "Exhaust", "Suspension", "Electronics", "Wheels"];
 

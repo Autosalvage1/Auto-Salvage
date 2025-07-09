@@ -32,7 +32,7 @@ const pool = new Pool({
 app.get("/api/products", async (req, res) => {
   try {
     const { name, car, condition, stock_status, part, category } = req.query;
-    let query = "SELECT * FROM products WHERE type = 'car_part'";
+    let query = "SELECT * FROM products";
     const queryParams = [];
     const conditions = [];
 

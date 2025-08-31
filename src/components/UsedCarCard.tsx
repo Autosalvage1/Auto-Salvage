@@ -11,6 +11,7 @@ interface UsedCarCardProps {
   price: number;
   mileage: number;
   images?: string[];
+  image?: string;
   currency: string;
   language?: string;
 }
@@ -23,13 +24,14 @@ export const UsedCarCard = (props: UsedCarCardProps) => {
     price,
     mileage,
     images = [],
+  image,
     currency,
     language = "en",
   } = props;
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const timerRef = useRef<number | null>(null);
-  const imgs = images.length ? images : ["/placeholder.svg"];
+  const imgs = (images && images.length) ? images : (image ? [image] : ["/placeholder.svg"]);
 
   useEffect(() => {
     // only auto-slide when there are multiple images

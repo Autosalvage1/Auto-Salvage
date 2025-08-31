@@ -10,6 +10,7 @@ interface ProductCardProps {
   car: string;
   year?: string;
   images?: string[];
+  image?: string;
   condition: string;
   stockStatus: string;
   part: string;
@@ -26,6 +27,7 @@ export const ProductCard = (props: ProductCardProps) => {
     car,
     year,
     images = [],
+  image,
     condition,
     stockStatus,
     part,
@@ -36,7 +38,7 @@ export const ProductCard = (props: ProductCardProps) => {
   const [paused, setPaused] = useState(false);
   const timerRef = useRef<number | null>(null);
 
-  const imgs = images.length ? images : ["/placeholder.svg"];
+  const imgs = (images && images.length) ? images : (image ? [image] : ["/placeholder.svg"]);
 
   useEffect(() => {
     // only auto-slide when there are multiple images

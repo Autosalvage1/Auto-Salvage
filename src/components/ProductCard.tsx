@@ -39,7 +39,8 @@ export const ProductCard = (props: ProductCardProps) => {
   const imgs = images.length ? images : ["/placeholder.svg"];
 
   useEffect(() => {
-    if (paused) return;
+    // only auto-slide when there are multiple images
+    if (paused || imgs.length <= 1) return;
     timerRef.current = window.setInterval(() => {
       setIndex((i) => (i + 1) % imgs.length);
     }, 3500);

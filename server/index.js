@@ -1,4 +1,33 @@
+require("./patch-path-to-regexp.js");
 require("dotenv").config();
+// Monkey-patch path-to-regexp to log all parse inputs
+try {
+  const ptr = require("path-to-regexp");
+  const origParse = ptr.parse;
+  ptr.parse = function(pattern) {
+    console.log("path-to-regexp.parse called with:", pattern);
+    return origParse.apply(this, arguments);
+  };
+} catch (e) {
+  console.warn("Could not patch path-to-regexp:", e);
+}
+// Instrument path-to-regexp to log patterns that Express parses (helps debug startup errors)
+try {
+  const _ptr = require('path-to-regexp');
+  if (_ptr && typeof _ptr.parse === 'function') {
+    const _origParse = _ptr.parse;
+    _ptr.parse = function (pattern) {
+      try {
+        console.log('path-to-regexp.parse ->', String(pattern).slice(0, 200));
+      } catch (e) {
+        console.log('path-to-regexp.parse -> <unprintable pattern>');
+      }
+      return _origParse.apply(this, arguments);
+    };
+  }
+} catch (err) {
+  // ignore if not present yet
+}
 const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
@@ -15,6 +44,7 @@ const allowedOrigins = [
   "http://127.0.0.1:5173",
 ];
 
+console.log('REGISTER: app.use(cors)');
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -38,7 +68,9 @@ app.use(
 );
 
 // handle preflight requests for all routes
+console.log('REGISTER: app.options("*")');
 app.options("*", cors());
+console.log('REGISTER: app.use(express.json)');
 app.use(express.json());
 
 const pool = new Pool({

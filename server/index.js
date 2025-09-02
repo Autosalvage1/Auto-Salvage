@@ -146,9 +146,11 @@ app.post("/api/products", async (req, res) => {
     const stock_status_value = stock_status || stockStatus || null;
     // Some DB schemas don't have a `car` column — store incoming `car` value in `category` if present
     const category_value = category || car || null;
+    // Use a minimal, compatible column set that most schemas will have.
+    // Some remote DBs may omit columns like `condition` or `stock_status` which would cause INSERT failures.
     const { rows } = await pool.query(
-      "INSERT INTO products (name, price, image, condition, stock_status, part, category, type) VALUES ($1, $2, $3, $4, $5, $6, $7, 'car_part') RETURNING *",
-      [name, price, imageToStore, condition, stock_status_value, part, category_value]
+      "INSERT INTO products (name, price, image, part, category, type) VALUES ($1, $2, $3, $4, $5, 'car_part') RETURNING *",
+      [name, price, imageToStore, part, category_value]
     );
     res.json(rows[0]);
   } catch (error) {
@@ -176,9 +178,10 @@ app.put("/api/products/:id", async (req, res) => {
     const imageToStore = Array.isArray(images) && images.length ? images[0] : image || null;
     const stock_status_value = stock_status || stockStatus || null;
     const category_value = category || car || null;
+    // Update minimal columns to avoid SQL errors when certain columns are missing in the remote schema
     const { rows } = await pool.query(
-      "UPDATE products SET name = $1, price = $2, image = $3, condition = $4, stock_status = $5, part = $6, category = $7 WHERE id = $8 AND type = 'car_part' RETURNING *",
-      [name, price, imageToStore, condition, stock_status_value, part, category_value, id]
+      "UPDATE products SET name = $1, price = $2, image = $3, part = $4, category = $5 WHERE id = $6 AND type = 'car_part' RETURNING *",
+      [name, price, imageToStore, part, category_value, id]
     );
     res.json(rows[0]);
   } catch (error) {

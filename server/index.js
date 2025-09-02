@@ -144,9 +144,11 @@ app.post("/api/products", async (req, res) => {
     } = req.body;
     const imageToStore = Array.isArray(images) && images.length ? images[0] : image || null;
     const stock_status_value = stock_status || stockStatus || null;
+    // Some DB schemas don't have a `car` column — store incoming `car` value in `category` if present
+    const category_value = category || car || null;
     const { rows } = await pool.query(
-      "INSERT INTO products (name, price, image, car, condition, stock_status, part, category, type) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'car_part') RETURNING *",
-      [name, price, imageToStore, car, condition, stock_status_value, part, category]
+      "INSERT INTO products (name, price, image, condition, stock_status, part, category, type) VALUES ($1, $2, $3, $4, $5, $6, $7, 'car_part') RETURNING *",
+      [name, price, imageToStore, condition, stock_status_value, part, category_value]
     );
     res.json(rows[0]);
   } catch (error) {
@@ -173,9 +175,10 @@ app.put("/api/products/:id", async (req, res) => {
     } = req.body;
     const imageToStore = Array.isArray(images) && images.length ? images[0] : image || null;
     const stock_status_value = stock_status || stockStatus || null;
+    const category_value = category || car || null;
     const { rows } = await pool.query(
-      "UPDATE products SET name = $1, price = $2, image = $3, car = $4, condition = $5, stock_status = $6, part = $7, category = $8 WHERE id = $9 AND type = 'car_part' RETURNING *",
-      [name, price, imageToStore, car, condition, stock_status_value, part, category, id]
+      "UPDATE products SET name = $1, price = $2, image = $3, condition = $4, stock_status = $5, part = $6, category = $7 WHERE id = $8 AND type = 'car_part' RETURNING *",
+      [name, price, imageToStore, condition, stock_status_value, part, category_value, id]
     );
     res.json(rows[0]);
   } catch (error) {

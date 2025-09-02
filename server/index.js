@@ -39,6 +39,9 @@ const port = 3001;
 const allowedOrigins = [
   "https://auto-salvage.vercel.app",
   "https://autosalvage.autos",
+  // Render / onrender public URL(s)
+  "https://auto-salvage.onrender.com",
+  "https://autosalvage.onrender.com",
   "http://localhost:5173",
   "http://localhost:3000",
   "http://127.0.0.1:5173",
@@ -124,16 +127,30 @@ app.get("/api/products", async (req, res) => {
 
 app.post("/api/products", async (req, res) => {
   try {
+    console.log('POST /api/products body:', req.body);
     // accept either `image` (single) or `images` (array) from client
-    const { name, price, image, images, car, condition, stock_status, part, category } = req.body;
+    // support camelCase (stockStatus) from frontend and snake_case (stock_status)
+    const {
+      name,
+      price,
+      image,
+      images,
+      car,
+      condition,
+      stock_status,
+      stockStatus,
+      part,
+      category,
+    } = req.body;
     const imageToStore = Array.isArray(images) && images.length ? images[0] : image || null;
+    const stock_status_value = stock_status || stockStatus || null;
     const { rows } = await pool.query(
       "INSERT INTO products (name, price, image, car, condition, stock_status, part, category, type) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'car_part') RETURNING *",
-      [name, price, imageToStore, car, condition, stock_status, part, category]
+      [name, price, imageToStore, car, condition, stock_status_value, part, category]
     );
     res.json(rows[0]);
   } catch (error) {
-    console.error(error);
+    console.error('Error in POST /api/products:', error && error.stack ? error.stack : error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -141,15 +158,28 @@ app.post("/api/products", async (req, res) => {
 app.put("/api/products/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, price, image, images, car, condition, stock_status, part, category } = req.body;
+    console.log('PUT /api/products body:', req.body);
+    const {
+      name,
+      price,
+      image,
+      images,
+      car,
+      condition,
+      stock_status,
+      stockStatus,
+      part,
+      category,
+    } = req.body;
     const imageToStore = Array.isArray(images) && images.length ? images[0] : image || null;
+    const stock_status_value = stock_status || stockStatus || null;
     const { rows } = await pool.query(
       "UPDATE products SET name = $1, price = $2, image = $3, car = $4, condition = $5, stock_status = $6, part = $7, category = $8 WHERE id = $9 AND type = 'car_part' RETURNING *",
-      [name, price, imageToStore, car, condition, stock_status, part, category, id]
+      [name, price, imageToStore, car, condition, stock_status_value, part, category, id]
     );
     res.json(rows[0]);
   } catch (error) {
-    console.error(error);
+    console.error('Error in PUT /api/products/:id:', error && error.stack ? error.stack : error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -212,8 +242,9 @@ app.get("/api/used_cars", async (req, res) => {
 
 app.post("/api/used_cars", async (req, res) => {
   try {
-    const { make, model, year, price, mileage, image, images } = req.body;
-    const imageToStore = Array.isArray(images) && images.length ? images[0] : image || null;
+  console.log('POST /api/used_cars body:', req.body);
+  const { make, model, year, price, mileage, image, images } = req.body;
+  const imageToStore = Array.isArray(images) && images.length ? images[0] : image || null;
     const { rows } = await pool.query(
       "INSERT INTO used_cars (make, model, year, price, mileage, image, type) VALUES ($1, $2, $3, $4, $5, $6, 'used_car') RETURNING *",
       [make, model, year, price, mileage, imageToStore]
@@ -228,8 +259,9 @@ app.post("/api/used_cars", async (req, res) => {
 app.put("/api/used_cars/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { make, model, year, price, mileage, image, images } = req.body;
-    const imageToStore = Array.isArray(images) && images.length ? images[0] : image || null;
+  console.log('PUT /api/used_cars body:', req.body);
+  const { make, model, year, price, mileage, image, images } = req.body;
+  const imageToStore = Array.isArray(images) && images.length ? images[0] : image || null;
     const { rows } = await pool.query(
       "UPDATE used_cars SET make = $1, model = $2, year = $3, price = $4, mileage = $5, image = $6 WHERE id = $7 AND type = 'used_car' RETURNING *",
       [make, model, year, price, mileage, imageToStore, id]

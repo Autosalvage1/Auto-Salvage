@@ -19,7 +19,8 @@ export interface UsedCar {
   year: number;
   price: number;
   mileage: number;
-  image: string;
+  images?: string[];
+  image?: string;
   type: "used_car";
 }
 
@@ -164,7 +165,10 @@ export const sampleUsedCars: UsedCar[] = [
     year: 2020,
     price: 18000,
     mileage: 30000,
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=300&fit=crop"
+    ],
     type: "used_car",
   },
   {
@@ -174,7 +178,10 @@ export const sampleUsedCars: UsedCar[] = [
     year: 2019,
     price: 22000,
     mileage: 40000,
-    image: "https://images.unsplash.com/photo-1486496572940-2bb2341fdbdf?w=400&h=300&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1486496572940-2bb2341fdbdf?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1558439297-6d64de180fa3?w=400&h=300&fit=crop"
+    ],
     type: "used_car",
   },
   {
@@ -184,7 +191,10 @@ export const sampleUsedCars: UsedCar[] = [
     year: 2018,
     price: 25000,
     mileage: 50000,
-    image: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=400&h=300&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1580414329544-cddfa1abc36d?w=400&h=300&fit=crop"
+    ],
     type: "used_car",
   },
 ];

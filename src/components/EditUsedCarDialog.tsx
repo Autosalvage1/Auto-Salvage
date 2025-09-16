@@ -19,15 +19,23 @@ export default function EditUsedCarDialog({ usedCar, setUsedCars }) {
   const [year, setYear] = useState(usedCar.year);
   const [price, setPrice] = useState(usedCar.price);
   const [mileage, setMileage] = useState(usedCar.mileage);
-  const [image, setImage] = useState(usedCar.image);
+  const [imagesText, setImagesText] = useState(
+    usedCar.images && usedCar.images.length
+      ? usedCar.images.join("\n")
+      : usedCar.image || ""
+  );
 
   const handleSubmit = () => {
+    const imagesArr = imagesText
+      .split(/\n|,\s*/)
+      .map((s) => s.trim())
+      .filter(Boolean);
     fetch(`https://auto-salvage.onrender.com/api/used_cars/${usedCar.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ make, model, year, price, mileage, image }),
+      body: JSON.stringify({ make, model, year, price, mileage, images: imagesArr }),
     })
       .then((res) => res.json())
       .then((updatedUsedCar) => {
@@ -110,15 +118,17 @@ export default function EditUsedCarDialog({ usedCar, setUsedCars }) {
               onChange={(e) => setMileage(Number(e.target.value))}
             />
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="image" className="text-right">
-              Image URL
+          <div className="grid grid-cols-4 items-start gap-4">
+            <Label htmlFor="images" className="text-right">
+              Image URLs
             </Label>
-            <Input
-              id="image"
-              className="col-span-3"
-              value={image}
-              onChange={(e) => setImage(e.target.value)}
+            <textarea
+              id="images"
+              className="col-span-3 rounded-md border p-2 bg-muted/50"
+              placeholder="One URL per line or comma separated"
+              value={imagesText}
+              onChange={(e) => setImagesText(e.target.value)}
+              rows={3}
             />
           </div>
         </div>

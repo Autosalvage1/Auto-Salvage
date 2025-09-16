@@ -147,7 +147,7 @@ export default function Admin({ currency, toggleCurrency }: AdminProps) {
               <TableRow key={product.id}>
                 <TableCell>
                   <img
-                    src={product.image}
+                    src={product.images && product.images.length ? product.images[0] : (product.image || "/placeholder.svg")}
                     alt={product.name}
                     className="w-16 h-16 object-cover"
                   />
@@ -190,7 +190,7 @@ export default function Admin({ currency, toggleCurrency }: AdminProps) {
               <TableRow key={car.id}>
                 <TableCell>
                   <img
-                    src={car.image}
+                    src={car.images && car.images.length ? car.images[0] : (car.image || "/placeholder.svg")}
                     alt={`${car.make} ${car.model}`}
                     className="w-16 h-16 object-cover"
                   />

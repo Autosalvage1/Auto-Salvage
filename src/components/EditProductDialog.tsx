@@ -17,19 +17,37 @@ import { useState } from "react";
 export default function EditProductDialog({ product, setProducts }) {
   const [name, setName] = useState(product.name);
   const [price, setPrice] = useState(product.price);
-  const [image, setImage] = useState(product.image);
+  // Support both images array and fallback to image
+  const [imagesText, setImagesText] = useState(
+    product.images && product.images.length
+      ? product.images.join("\n")
+      : product.image || ""
+  );
   const [car, setCar] = useState(product.car);
   const [condition, setCondition] = useState(product.condition);
   const [stockStatus, setStockStatus] = useState(product.stock_status);
   const [part, setPart] = useState(product.part);
 
   const handleSubmit = () => {
+    // Split by newlines or commas, filter out empty strings
+    const imagesArr = imagesText
+      .split(/\n|,\s*/)
+      .map((s) => s.trim())
+      .filter(Boolean);
     fetch(`https://auto-salvage.onrender.com/api/products/${product.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name, price, image, car, condition, stockStatus, part }),
+      body: JSON.stringify({
+        name,
+        price,
+        images: imagesArr,
+        car,
+        condition,
+        stockStatus,
+        part,
+      }),
     })
       .then((res) => res.json())
       .then((updatedProduct) => {
@@ -88,15 +106,17 @@ export default function EditProductDialog({ product, setProducts }) {
               onChange={(e) => setPrice(Number(e.target.value))}
             />
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="image" className="text-right">
-              Image URL
+          <div className="grid grid-cols-4 items-start gap-4">
+            <Label htmlFor="images" className="text-right">
+              Image URLs
             </Label>
-            <Input
-              id="image"
-              className="col-span-3"
-              value={image}
-              onChange={(e) => setImage(e.target.value)}
+            <textarea
+              id="images"
+              className="col-span-3 rounded-md border p-2 bg-muted/50"
+              placeholder="One URL per line or comma separated"
+              value={imagesText}
+              onChange={(e) => setImagesText(e.target.value)}
+              rows={3}
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">

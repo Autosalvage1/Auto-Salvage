@@ -128,7 +128,10 @@ export default function EditUsedCarDialog({ usedCar, setUsedCars }) {
               type="file"
               multiple
               accept="image/*"
-              onChange={(e) => setFiles(e.target.files)}
+              onChange={(e) => {
+                console.log("Selected files:", e.target.files);
+                setFiles(e.target.files);
+              }}
             />
           </div>
         </div>

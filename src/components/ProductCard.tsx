@@ -45,7 +45,7 @@ export const ProductCard = (props: ProductCardProps) => {
     if (paused || imgs.length <= 1) return;
     timerRef.current = window.setInterval(() => {
       setIndex((i) => (i + 1) % imgs.length);
-    }, 3500);
+    }, 2000);
     return () => {
       if (timerRef.current) window.clearInterval(timerRef.current);
     };

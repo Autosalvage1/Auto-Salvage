@@ -19,16 +19,23 @@ export default function AddUsedCarDialog({ setUsedCars }) {
   const [year, setYear] = useState(0);
   const [price, setPrice] = useState(0);
   const [mileage, setMileage] = useState(0);
-  const [image, setImage] = useState("");
-  const [imagesText, setImagesText] = useState("");
+  const [files, setFiles] = useState<FileList | null>(null);
 
   const handleSubmit = () => {
+    const formData = new FormData();
+    formData.append("make", make);
+    formData.append("model", model);
+    formData.append("year", year.toString());
+    formData.append("price", price.toString());
+    formData.append("mileage", mileage.toString());
+    if (files) {
+      Array.from(files).forEach((file) => {
+        formData.append("images", file);
+      });
+    }
     fetch("https://auto-salvage.onrender.com/api/used_cars", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-  body: JSON.stringify({ make, model, year, price, mileage, images: imagesText.split(/\n|,\s*/) }),
+      body: formData,
     })
       .then((res) => res.json())
       .then((newUsedCar) => {
@@ -107,17 +114,17 @@ export default function AddUsedCarDialog({ setUsedCars }) {
               onChange={(e) => setMileage(Number(e.target.value))}
             />
           </div>
-          <div className="grid grid-cols-4 items-start gap-4">
+          <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="images" className="text-right">
-              Image URLs
+              Upload Images
             </Label>
-            <textarea
+            <input
               id="images"
-              className="col-span-3 rounded-md border p-2 bg-muted/50"
-              placeholder="One URL per line or comma separated"
-              value={imagesText}
-              onChange={(e) => setImagesText(e.target.value)}
-              rows={3}
+              className="col-span-3"
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={(e) => setFiles(e.target.files)}
             />
           </div>
         </div>

@@ -14,23 +14,30 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { products } from "@/data/products";
 import { useState } from "react";
 
-export default function AddProductDialog({ setProducts }) {
   const [name, setName] = useState("");
   const [price, setPrice] = useState(0);
-  const [image, setImage] = useState("");
-  const [imagesText, setImagesText] = useState("");
   const [car, setCar] = useState("");
   const [condition, setCondition] = useState("");
   const [stockStatus, setStockStatus] = useState("");
   const [part, setPart] = useState("");
+  const [files, setFiles] = useState<FileList | null>(null);
 
   const handleSubmit = () => {
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("price", price.toString());
+    formData.append("car", car);
+    formData.append("condition", condition);
+    formData.append("stockStatus", stockStatus);
+    formData.append("part", part);
+    if (files) {
+      Array.from(files).forEach((file) => {
+        formData.append("images", file);
+      });
+    }
     fetch("https://auto-salvage.onrender.com/api/products", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-  body: JSON.stringify({ name, price, images: imagesText.split(/\n|,\s*/), car, condition, stockStatus, part }),
+      body: formData,
     })
       .then((res) => res.json())
       .then((newProduct) => {
@@ -85,17 +92,17 @@ export default function AddProductDialog({ setProducts }) {
               onChange={(e) => setPrice(Number(e.target.value))}
             />
           </div>
-          <div className="grid grid-cols-4 items-start gap-4">
+          <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="images" className="text-right">
-              Image URLs
+              Upload Images
             </Label>
-            <textarea
+            <input
               id="images"
-              className="col-span-3 rounded-md border p-2 bg-muted/50"
-              placeholder="One URL per line or comma separated"
-              value={imagesText}
-              onChange={(e) => setImagesText(e.target.value)}
-              rows={3}
+              className="col-span-3"
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={(e) => setFiles(e.target.files)}
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
@@ -146,4 +153,4 @@ export default function AddProductDialog({ setProducts }) {
       </DialogContent>
     </Dialog>
   );
-}
+};

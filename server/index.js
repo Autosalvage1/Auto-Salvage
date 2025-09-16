@@ -80,6 +80,15 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
+// Log available columns in products table at startup
+pool.query(`SELECT column_name FROM information_schema.columns WHERE table_name = 'products'`) 
+  .then(res => {
+    console.log('Products table columns:', res.rows.map(r => r.column_name));
+  })
+  .catch(err => {
+    console.error('Could not fetch products table columns:', err);
+  });
+
 // Products API
 app.get("/api/products", async (req, res) => {
   try {
@@ -144,13 +153,10 @@ app.post("/api/products", async (req, res) => {
     } = req.body;
     const imageToStore = Array.isArray(images) && images.length ? images[0] : image || null;
     const stock_status_value = stock_status || stockStatus || null;
-    // Some DB schemas don't have a `car` column — store incoming `car` value in `category` if present
-    const category_value = category || car || null;
-    // Use a minimal, compatible column set that most schemas will have.
-    // Some remote DBs may omit columns like `condition` or `stock_status` which would cause INSERT failures.
+
     const { rows } = await pool.query(
-      "INSERT INTO products (name, price, image, part, category, type) VALUES ($1, $2, $3, $4, $5, 'car_part') RETURNING *",
-      [name, price, imageToStore, part, category_value]
+      "INSERT INTO products (name, price, image, car, condition, stock_status, part, category, type) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'car_part') RETURNING *",
+      [name, price, imageToStore, car, condition, stock_status_value, part, category]
     );
     res.json(rows[0]);
   } catch (error) {
@@ -177,11 +183,10 @@ app.put("/api/products/:id", async (req, res) => {
     } = req.body;
     const imageToStore = Array.isArray(images) && images.length ? images[0] : image || null;
     const stock_status_value = stock_status || stockStatus || null;
-    const category_value = category || car || null;
-    // Update minimal columns to avoid SQL errors when certain columns are missing in the remote schema
+
     const { rows } = await pool.query(
-      "UPDATE products SET name = $1, price = $2, image = $3, part = $4, category = $5 WHERE id = $6 AND type = 'car_part' RETURNING *",
-      [name, price, imageToStore, part, category_value, id]
+      "UPDATE products SET name = $1, price = $2, image = $3, car = $4, condition = $5, stock_status = $6, part = $7, category = $8 WHERE id = $9 AND type = 'car_part' RETURNING *",
+      [name, price, imageToStore, car, condition, stock_status_value, part, category, id]
     );
     res.json(rows[0]);
   } catch (error) {

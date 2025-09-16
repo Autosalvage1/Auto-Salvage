@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { HeroSection } from "@/components/HeroSection";
 import { ProductCard } from "@/components/ProductCard";
+import { ProductDetailDialog } from "@/components/ProductDetailDialog";
 import { UsedCarCard } from "@/components/UsedCarCard";
+import { UsedCarDetailDialog } from "@/components/UsedCarDetailDialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -109,7 +111,11 @@ const Index = () => {
   const [currency, setCurrency] = useState("US");
   const [language, setLanguage] = useState("en");
   const [products, setProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [detailOpen, setDetailOpen] = useState(false);
   const [usedCars, setUsedCars] = useState([]);
+  const [selectedUsedCar, setSelectedUsedCar] = useState(null);
+  const [usedCarDetailOpen, setUsedCarDetailOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCar, setSelectedCar] = useState("");
   const [selectedCondition, setSelectedCondition] = useState("");
@@ -309,8 +315,12 @@ const Index = () => {
                   : "grid-cols-1"
                 }`}>
                 {products.map((product) => (
-                  <ProductCard key={product.id} {...product} currency={currency} />
+                  <div key={product.id} onClick={() => { setSelectedProduct(product); setDetailOpen(true); }} className="cursor-pointer">
+                    <ProductCard {...product} currency={currency} />
+                  </div>
                 ))}
+  {/* Product Detail Dialog */}
+  <ProductDetailDialog open={detailOpen} onOpenChange={setDetailOpen} product={selectedProduct} />
               </div>
 
               {/* Load More */}
@@ -347,8 +357,11 @@ const Index = () => {
               {/* Used Car Grid */}
               <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {usedCars.map((car) => (
-                  <UsedCarCard key={car.id} {...car} currency={currency} />
+                  <div key={car.id} onClick={() => { setSelectedUsedCar(car); setUsedCarDetailOpen(true); }} className="cursor-pointer">
+                    <UsedCarCard {...car} currency={currency} />
+                  </div>
                 ))}
+                <UsedCarDetailDialog open={usedCarDetailOpen} onOpenChange={setUsedCarDetailOpen} car={selectedUsedCar} />
               </div>
 
               {/* Load More */}

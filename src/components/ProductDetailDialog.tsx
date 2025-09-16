@@ -43,7 +43,7 @@ export const ProductDetailDialog = ({ open, onOpenChange, product }: ProductDeta
           <DialogTitle>{name}</DialogTitle>
         </DialogHeader>
         <div className="relative overflow-hidden mb-4" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
-          <img src={imgs[index]} alt={name} className="w-full h-64 object-cover rounded" />
+          <img src={imgs[index]?.startsWith('/uploads/') ? `https://auto-salvage.onrender.com${imgs[index]}` : imgs[index]} alt={name} className="w-full h-64 object-cover rounded" />
           {imgs.length > 1 && (
             <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-2">
               {imgs.map((_, i) => (

@@ -113,7 +113,7 @@ export default function EditUsedCarDialog({ usedCar, setUsedCars }) {
           {usedCar.images && usedCar.images.length > 0 && (
             <div className="col-span-4 flex flex-wrap gap-2 mb-2">
               {usedCar.images.map((img, i) => (
-                <img key={i} src={img} alt="Current" className="w-16 h-16 object-cover rounded" />
+                <img key={i} src={img?.startsWith('/uploads/') ? `https://auto-salvage.onrender.com${img}` : img} alt="Current" className="w-16 h-16 object-cover rounded" />
               ))}
             </div>
           )}

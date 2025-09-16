@@ -162,6 +162,8 @@ app.get("/api/products", async (req, res) => {
 
 app.post("/api/products", upload.array("images", 10), async (req, res) => {
   try {
+    console.log('POST /api/products body:', req.body);
+    console.log('POST /api/products files:', req.files);
     // Accept form fields
     const { name, price, car, condition, stockStatus, part, category } = req.body;
     const stock_status_value = req.body.stock_status || stockStatus || null;
@@ -182,6 +184,8 @@ app.post("/api/products", upload.array("images", 10), async (req, res) => {
           [product.id, file.originalname, file.mimetype, fileUrl]
         );
       }
+    } else {
+      console.warn('No files received in POST /api/products');
     }
     // Return product with image URLs
     res.json({ ...product, images: imageUrls });
@@ -279,6 +283,8 @@ app.get("/api/used_cars", async (req, res) => {
 
 app.post("/api/used_cars", upload.array("images", 10), async (req, res) => {
   try {
+    console.log('POST /api/used_cars body:', req.body);
+    console.log('POST /api/used_cars files:', req.files);
     const { make, model, year, price, mileage } = req.body;
     // Insert used car first
     const { rows } = await pool.query(
@@ -297,6 +303,8 @@ app.post("/api/used_cars", upload.array("images", 10), async (req, res) => {
           [usedCar.id, file.originalname, file.mimetype, fileUrl]
         );
       }
+    } else {
+      console.warn('No files received in POST /api/used_cars');
     }
     // Return used car with image URLs
     res.json({ ...usedCar, images: imageUrls });

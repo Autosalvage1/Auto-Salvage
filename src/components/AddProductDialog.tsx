@@ -14,6 +14,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { products } from "@/data/products";
 import { useState } from "react";
 
+// AddProductDialog component for adding new products
+const AddProductDialog = () => {
   const [name, setName] = useState("");
   const [price, setPrice] = useState(0);
   const [car, setCar] = useState("");
@@ -41,7 +43,7 @@ import { useState } from "react";
     })
       .then((res) => res.json())
       .then((newProduct) => {
-        setProducts((prevProducts) => [...prevProducts, newProduct]);
+        console.log("New product added:", newProduct);
       });
   };
 
@@ -154,3 +156,5 @@ import { useState } from "react";
     </Dialog>
   );
 };
+
+export default AddProductDialog;

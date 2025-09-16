@@ -11,7 +11,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+
+import React, { useState } from "react";
+
 
 export default function EditUsedCarDialog({ usedCar, setUsedCars }) {
   const [make, setMake] = useState(usedCar.make);
@@ -45,102 +47,4 @@ export default function EditUsedCarDialog({ usedCar, setUsedCars }) {
       });
   };
 
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="mr-2">
-          Edit
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Edit Used Car</DialogTitle>
-          <DialogDescription>
-            Edit the details of your used car.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="make" className="text-right">
-              Make
-            </Label>
-            <Input
-              id="make"
-              className="col-span-3"
-              value={make}
-              onChange={(e) => setMake(e.target.value)}
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="model" className="text-right">
-              Model
-            </Label>
-            <Input
-              id="model"
-              className="col-span-3"
-              value={model}
-              onChange={(e) => setModel(e.target.value)}
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="year" className="text-right">
-              Year
-            </Label>
-            <Input
-              id="year"
-              type="number"
-              className="col-span-3"
-              value={year}
-              onChange={(e) => setYear(Number(e.target.value))}
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="price" className="text-right">
-              Price
-            </Label>
-            <Input
-              id="price"
-              type="number"
-              className="col-span-3"
-              value={price}
-              onChange={(e) => setPrice(Number(e.target.value))}
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="mileage" className="text-right">
-              Mileage
-            </Label>
-            <Input
-              id="mileage"
-              type="number"
-              className="col-span-3"
-              value={mileage}
-              onChange={(e) => setMileage(Number(e.target.value))}
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="images" className="text-right">
-              Upload Images
-            </Label>
-            <input
-              id="images"
-              className="col-span-3"
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={(e) => {
-                console.log("Selected files:", e.target.files);
-                setFiles(e.target.files);
-              }}
-            />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button type="submit" onClick={handleSubmit}>
-            Save changes
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
+

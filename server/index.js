@@ -28,12 +28,38 @@ try {
 } catch (err) {
   // ignore if not present yet
 }
+
 const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
+
 
 const app = express();
 const port = 3001;
+
+// Set up uploads directory
+const UPLOADS_DIR = path.join(__dirname, "../uploads");
+if (!fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+}
+
+// Multer storage config
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, UPLOADS_DIR);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + '-' + file.originalname);
+  }
+});
+const upload = multer({ storage });
+
+// Serve uploaded images statically
+app.use('/uploads', express.static(UPLOADS_DIR));
 
 // Allowed origins for production; include common local dev origins for testing
 const allowedOrigins = [
@@ -134,31 +160,31 @@ app.get("/api/products", async (req, res) => {
   }
 });
 
-app.post("/api/products", async (req, res) => {
+app.post("/api/products", upload.array("images", 10), async (req, res) => {
   try {
-    console.log('POST /api/products body:', req.body);
-    // accept either `image` (single) or `images` (array) from client
-    // support camelCase (stockStatus) from frontend and snake_case (stock_status)
-    const {
-      name,
-      price,
-      image,
-      images,
-      car,
-      condition,
-      stock_status,
-      stockStatus,
-      part,
-      category,
-    } = req.body;
-    const imageToStore = Array.isArray(images) && images.length ? images[0] : image || null;
-    const stock_status_value = stock_status || stockStatus || null;
-
+    // Accept form fields
+    const { name, price, car, condition, stockStatus, part, category } = req.body;
+    const stock_status_value = req.body.stock_status || stockStatus || null;
+    // Insert product first
     const { rows } = await pool.query(
-      "INSERT INTO products (name, price, image, car, condition, stock_status, part, category, type) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'car_part') RETURNING *",
-      [name, price, imageToStore, car, condition, stock_status_value, part, category]
+      "INSERT INTO products (name, price, car, condition, stock_status, part, category, type) VALUES ($1, $2, $3, $4, $5, $6, $7, 'car_part') RETURNING *",
+      [name, price, car, condition, stock_status_value, part, category]
     );
-    res.json(rows[0]);
+    const product = rows[0];
+    // Save image file paths in product_images table
+    let imageUrls = [];
+    if (req.files && req.files.length) {
+      for (const file of req.files) {
+        const fileUrl = `/uploads/${file.filename}`;
+        imageUrls.push(fileUrl);
+        await pool.query(
+          "INSERT INTO product_images (product_id, filename, mimetype, file_path) VALUES ($1, $2, $3, $4)",
+          [product.id, file.originalname, file.mimetype, fileUrl]
+        );
+      }
+    }
+    // Return product with image URLs
+    res.json({ ...product, images: imageUrls });
   } catch (error) {
     console.error('Error in POST /api/products:', error && error.stack ? error.stack : error);
     res.status(500).json({ error: "Internal server error" });
@@ -251,16 +277,29 @@ app.get("/api/used_cars", async (req, res) => {
   }
 });
 
-app.post("/api/used_cars", async (req, res) => {
+app.post("/api/used_cars", upload.array("images", 10), async (req, res) => {
   try {
-  console.log('POST /api/used_cars body:', req.body);
-  const { make, model, year, price, mileage, image, images } = req.body;
-  const imageToStore = Array.isArray(images) && images.length ? images[0] : image || null;
+    const { make, model, year, price, mileage } = req.body;
+    // Insert used car first
     const { rows } = await pool.query(
-      "INSERT INTO used_cars (make, model, year, price, mileage, image, type) VALUES ($1, $2, $3, $4, $5, $6, 'used_car') RETURNING *",
-      [make, model, year, price, mileage, imageToStore]
+      "INSERT INTO used_cars (make, model, year, price, mileage, type) VALUES ($1, $2, $3, $4, $5, 'used_car') RETURNING *",
+      [make, model, year, price, mileage]
     );
-    res.json(rows[0]);
+    const usedCar = rows[0];
+    // Save image file paths in used_car_images table
+    let imageUrls = [];
+    if (req.files && req.files.length) {
+      for (const file of req.files) {
+        const fileUrl = `/uploads/${file.filename}`;
+        imageUrls.push(fileUrl);
+        await pool.query(
+          "INSERT INTO used_car_images (used_car_id, filename, mimetype, file_path) VALUES ($1, $2, $3, $4)",
+          [usedCar.id, file.originalname, file.mimetype, fileUrl]
+        );
+      }
+    }
+    // Return used car with image URLs
+    res.json({ ...usedCar, images: imageUrls });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });

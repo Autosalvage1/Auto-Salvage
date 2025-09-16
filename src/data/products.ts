@@ -5,7 +5,7 @@ export interface Product {
   price: number;
   car: string;
   year?: string;
-  image: string;
+  images: string[];
   condition: "New" | "Used" | "Refurbished";
   availability: "In Stock" | "Low Stock" | "Out of Stock";
   category: string;
@@ -30,7 +30,11 @@ export const sampleProducts: Product[] = [
     price: 2500,
     car: "Toyota Camry",
     year: "2018-2020",
-    image: "https://images.unsplash.com/photo-1486496572940-2bb2341fdbdf?w=400&h=300&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1486496572940-2bb2341fdbdf?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1558439297-6d64de180fa3?w=400&h=300&fit=crop"
+    ],
     condition: "Refurbished",
     availability: "In Stock",
     category: "Engine",
@@ -42,7 +46,10 @@ export const sampleProducts: Product[] = [
     price: 180,
     car: "Honda Civic",
     year: "2016-2019",
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=400&h=300&fit=crop"
+    ],
     condition: "Used",
     availability: "In Stock",
     category: "Brakes",
@@ -54,7 +61,10 @@ export const sampleProducts: Product[] = [
     price: 120,
     car: "Ford F-150",
     year: "2017-2021",
-    image: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=400&h=300&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1580414329544-cddfa1abc36d?w=400&h=300&fit=crop"
+    ],
     condition: "Used",
     availability: "Low Stock",
     category: "Lighting",
@@ -66,7 +76,9 @@ export const sampleProducts: Product[] = [
     price: 1800,
     car: "Chevrolet Silverado",
     year: "2015-2018",
-    image: "https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=400&h=300&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=400&h=300&fit=crop"
+    ],
     condition: "Refurbished",
     availability: "In Stock",
     category: "Transmission",
@@ -78,7 +90,9 @@ export const sampleProducts: Product[] = [
     price: 350,
     car: "BMW 3 Series",
     year: "2019-2022",
-    image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=400&h=300&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=400&h=300&fit=crop"
+    ],
     condition: "Used",
     availability: "Out of Stock",
     category: "Body",
@@ -90,7 +104,9 @@ export const sampleProducts: Product[] = [
     price: 420,
     car: "Nissan Altima",
     year: "2016-2020",
-    image: "https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=400&h=300&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=400&h=300&fit=crop"
+    ],
     condition: "New",
     availability: "In Stock",
     category: "Exhaust",
@@ -102,7 +118,9 @@ export const sampleProducts: Product[] = [
     price: 680,
     car: "Jeep Wrangler",
     year: "2014-2018",
-    image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=300&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=300&fit=crop"
+    ],
     condition: "Used",
     availability: "In Stock",
     category: "Suspension",
@@ -114,7 +132,9 @@ export const sampleProducts: Product[] = [
     price: 290,
     car: "Mazda CX-5",
     year: "2017-2021",
-    image: "https://images.unsplash.com/photo-1580414329544-cddfa1abc36d?w=400&h=300&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1580414329544-cddfa1abc36d?w=400&h=300&fit=crop"
+    ],
     condition: "Refurbished",
     availability: "Low Stock",
     category: "Electronics",
@@ -126,7 +146,9 @@ export const sampleProducts: Product[] = [
     price: 320,
     car: "Subaru Outback",
     year: "2015-2019",
-    image: "https://images.unsplash.com/photo-1558439297-6d64de180fa3?w=400&h=300&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1558439297-6d64de180fa3?w=400&h=300&fit=crop"
+    ],
     condition: "Used",
     availability: "In Stock",
     category: "Wheels",

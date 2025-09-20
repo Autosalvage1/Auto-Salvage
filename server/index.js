@@ -42,18 +42,38 @@ const port = 3001;
 
 // Set up uploads directory
 const UPLOADS_DIR = path.join(__dirname, "../uploads");
+console.log(`UPLOADS_DIR is set to: ${UPLOADS_DIR}`);
+
 if (!fs.existsSync(UPLOADS_DIR)) {
-  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+  console.log(`Uploads directory does not exist. Creating it at: ${UPLOADS_DIR}`);
+  try {
+    fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+    console.log(`Uploads directory successfully created at: ${UPLOADS_DIR}`);
+  } catch (err) {
+    console.error(`Error creating uploads directory at ${UPLOADS_DIR}:`, err);
+  }
+} else {
+  console.log(`Uploads directory already exists at: ${UPLOADS_DIR}`);
 }
 
 // Multer storage config
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
+    console.log(`Multer destination function called for file: ${file.originalname}`);
+    console.log(`Attempting to save to destination: ${UPLOADS_DIR}`);
+    // Check if the directory exists before passing it to cb
+    if (!fs.existsSync(UPLOADS_DIR)) {
+      console.error(`Multer destination error: UPLOADS_DIR does not exist: ${UPLOADS_DIR}`);
+      return cb(new Error(`Uploads directory not found: ${UPLOADS_DIR}`), null);
+    }
     cb(null, UPLOADS_DIR);
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + '-' + file.originalname);
+    const newFilename = uniqueSuffix + '-' + file.originalname;
+    console.log(`Multer filename function called for file: ${file.originalname}`);
+    console.log(`Generated new filename: ${newFilename}`);
+    cb(null, newFilename);
   }
 });
 const upload = multer({ storage });

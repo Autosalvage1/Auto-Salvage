@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
-import { HeroSection } from "@/components/HeroSection";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductDetailDialog } from "@/components/ProductDetailDialog";
 import { UsedCarCard } from "@/components/UsedCarCard";
@@ -10,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Filter, Grid, List, Search } from "lucide-react";
-
+import { sampleProducts, sampleUsedCars } from "@/data/products";
 
 const translations = {
   en: {
@@ -110,10 +109,10 @@ const translations = {
 const Index = () => {
   const [currency, setCurrency] = useState("US");
   const [language, setLanguage] = useState("en");
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState(sampleProducts);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [detailOpen, setDetailOpen] = useState(false);
-  const [usedCars, setUsedCars] = useState([]);
+  const [usedCars, setUsedCars] = useState(sampleUsedCars);
   const [selectedUsedCar, setSelectedUsedCar] = useState(null);
   const [usedCarDetailOpen, setUsedCarDetailOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -126,76 +125,34 @@ const Index = () => {
   const t = translations[language];
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        let url = "https://auto-salvage.onrender.com/api/products?";
-        if (searchQuery) url += `name=${searchQuery}&`;
-        if (selectedCar && selectedCar !== "all") url += `car=${selectedCar}&`;
-        if (selectedCondition && selectedCondition !== "all")
-          url += `condition=${selectedCondition}&`;
-        if (selectedStockStatus && selectedStockStatus !== "all")
-          url += `stock_status=${selectedStockStatus}&`;
-        if (selectedPart && selectedPart !== "all") url += `part=${selectedPart}&`;
+    let filteredProducts = sampleProducts;
 
-        const res = await fetch(url);
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          setProducts(
-            data.map((product) => ({
-              ...product,
-              price: parseFloat(product.price),
-            }))
-          );
-        } else {
-          console.error("Error fetching products:", data);
-          setProducts([]);
-        }
-      } catch (error) {
-        console.error("Error fetching products:", error);
-        setProducts([]);
-      }
-    };
-
-    const fetchUsedCars = async () => {
-      try {
-        let url = "https://auto-salvage.onrender.com/api/used_cars?";
-        // Add filters for used cars here
-        const res = await fetch(url);
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          setUsedCars(
-            data.map((car) => ({ ...car, price: parseFloat(car.price) }))
-          );
-        } else {
-          console.error("Error fetching used cars:", data);
-          setUsedCars([]);
-        }
-      } catch (error) {
-        console.error("Error fetching used cars:", error);
-        setUsedCars([]);
-      }
-    };
-
-    if (activeTab === "carParts") {
-      fetchProducts();
-    } else {
-      fetchUsedCars();
+    if (searchQuery) {
+      filteredProducts = filteredProducts.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
     }
-  }, [
-    searchQuery,
-    selectedCar,
-    selectedCondition,
-    selectedStockStatus,
-    selectedPart,
-    activeTab,
-  ]);
+    if (selectedCar && selectedCar !== "all") {
+      filteredProducts = filteredProducts.filter(p => p.car === selectedCar);
+    }
+    if (selectedCondition && selectedCondition !== "all") {
+      filteredProducts = filteredProducts.filter(p => p.condition.toLowerCase() === selectedCondition);
+    }
+    if (selectedStockStatus && selectedStockStatus !== "all") {
+      filteredProducts = filteredProducts.filter(p => p.availability.toLowerCase().replace(' ', '_') === selectedStockStatus);
+    }
+    if (selectedPart && selectedPart !== "all") {
+      filteredProducts = filteredProducts.filter(p => p.category.toLowerCase() === selectedPart);
+    }
+
+    setProducts(filteredProducts);
+
+  }, [searchQuery, selectedCar, selectedCondition, selectedStockStatus, selectedPart]);
+
 
   const categories = ["All", "Engine", "Brakes", "Lighting", "Transmission", "Body", "Exhaust", "Suspension", "Electronics", "Wheels"];
 
   return (
     <div className="min-h-screen bg-background">
   <Header currency={currency} setCurrency={setCurrency} language={language} setLanguage={setLanguage} />
-  <HeroSection language={language} />
 
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-center mb-8">

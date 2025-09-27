@@ -1,7 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { Search, Wrench, Shield, Truck } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 
 export const HeroSection = () => {
+  const imageGroups = [
+    ["/victoire/board1.jpeg", "/victoire/board2.jpeg", "/victoire/board3.jpeg", "/victoire/board4.jpeg"],
+    ["/victoire/bumber1.jpeg", "/victoire/bumber2.jpeg", "/victoire/bumber3.jpeg", "/victoire/bumber4.jpeg"],
+    ["/victoire/hardtop1.jpeg", "/victoire/hardtop2.jpeg", "/victoire/hardtop3.jpeg", "/victoire/hardtop4.jpeg"],
+    ["/victoire/hillux1.jpeg", "/victoire/hillux2.jpeg", "/victoire/hillux3.jpeg", "/victoire/hillux4.jpeg"],
+  ];
+  const allImages = imageGroups.flat();
+
   return (
     <section className="relative bg-gradient-hero text-white py-20 overflow-hidden">
       <div className="absolute inset-0 bg-black/20"></div>
@@ -26,8 +37,29 @@ export const HeroSection = () => {
           </div>
         </div>
 
+        <Carousel
+          plugins={[Autoplay({ delay: 2000, stopOnInteraction: false, stopOnMouseEnter: true })]}
+          className="w-full max-w-4xl mx-auto"
+        >
+          <CarouselContent>
+            {allImages.map((src, index) => (
+              <CarouselItem key={index}>
+                <div className="p-1">
+                  <Card>
+                    <CardContent className="flex aspect-video items-center justify-center p-0 overflow-hidden">
+                      <img src={src} alt={`Salvage part ${index + 1}`} className="w-full h-full object-cover" />
+                    </CardContent>
+                  </Card>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="absolute left-[-50px] top-1/2 -translate-y-1/2 fill-white" />
+          <CarouselNext className="absolute right-[-50px] top-1/2 -translate-y-1/2 fill-white" />
+        </Carousel>
+
         {/* Features */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto mt-12">
           <div className="text-center">
             <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <Wrench className="h-8 w-8 text-primary" />
